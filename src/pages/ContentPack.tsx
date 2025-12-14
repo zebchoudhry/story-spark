@@ -13,7 +13,8 @@ import {
   Image,
   Hash,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Lock
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,18 +36,49 @@ const ContentPack = () => {
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const [contentPack, setContentPack] = useState<ContentPackData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRegenerating, setIsRegenerating] = useState(false);
   const [storyTitle, setStoryTitle] = useState("");
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
+  const [checkingSubscription, setCheckingSubscription] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      generateContentPack();
+    if (user) {
+      checkSubscription();
     }
-  }, [id]);
+  }, [user]);
 
-  const generateContentPack = async () => {
+  useEffect(() => {
+    if (id && hasActiveSubscription === true) {
+      loadContentPack();
+    }
+  }, [id, hasActiveSubscription]);
+
+  const checkSubscription = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("status, plan")
+        .eq("user_id", user?.id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      // Allow access for active subscriptions or any paid plan
+      const isActive = data?.status === "active" || 
+                       (data?.plan && data.plan !== "free");
+      setHasActiveSubscription(isActive);
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+      setHasActiveSubscription(false);
+    } finally {
+      setCheckingSubscription(false);
+    }
+  };
+
+  const loadContentPack = async () => {
     setIsLoading(true);
     try {
-      // First, fetch the story details
+      // Fetch the story details
       const { data: story, error: storyError } = await supabase
         .from("story_cards")
         .select("title, summary_short, summary_long")
@@ -67,16 +99,17 @@ const ContentPack = () => {
 
       setStoryTitle(story.title);
 
-      // Check if we already have a content pack for this story and user
-      const { data: existingPack, error: packError } = await supabase
+      // Check for existing content pack
+      const { data: existingPack } = await supabase
         .from("story_content_packs")
         .select("*")
         .eq("story_card_id", id)
         .eq("user_id", user?.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (existingPack) {
-        // Parse existing content pack
         setContentPack({
           youtube_script: existingPack.youtube_script || "",
           shorts_script: existingPack.shorts_script || "",
@@ -84,9 +117,45 @@ const ContentPack = () => {
           thumbnail_texts: existingPack.thumbnail_texts ? JSON.parse(existingPack.thumbnail_texts) : [],
           hashtags: existingPack.hashtags ? JSON.parse(existingPack.hashtags) : [],
         });
-        setIsLoading(false);
+      }
+      // If no pack exists, show empty state with generate button
+    } catch (error) {
+      console.error("Error loading content pack:", error);
+      toast({
+        title: "Error loading content",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateContentPack = async (regenerate = false) => {
+    if (regenerate) {
+      setIsRegenerating(true);
+    } else {
+      setIsLoading(true);
+    }
+
+    try {
+      // Fetch story details
+      const { data: story, error: storyError } = await supabase
+        .from("story_cards")
+        .select("title, summary_short, summary_long")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (storyError) throw storyError;
+      if (!story) {
+        toast({
+          title: "Story not found",
+          variant: "destructive",
+        });
         return;
       }
+
+      setStoryTitle(story.title);
 
       // Generate new content pack using AI
       const { data: aiResponse, error: aiError } = await supabase.functions.invoke("generate-content-pack", {
@@ -100,7 +169,6 @@ const ContentPack = () => {
         throw new Error(aiError.message || "Failed to generate content pack");
       }
 
-      // Parse the AI response
       const pack: ContentPackData = {
         youtube_script: aiResponse.youtube_script || "",
         shorts_script: aiResponse.shorts_script || "",
@@ -110,7 +178,7 @@ const ContentPack = () => {
       };
 
       // Save to database
-      await supabase.from("story_content_packs").insert({
+      const { error: insertError } = await supabase.from("story_content_packs").insert({
         story_card_id: id,
         user_id: user?.id,
         youtube_script: pack.youtube_script,
@@ -120,22 +188,25 @@ const ContentPack = () => {
         hashtags: JSON.stringify(pack.hashtags),
       });
 
+      if (insertError) {
+        console.error("Error saving content pack:", insertError);
+      }
+
       setContentPack(pack);
       toast({
-        title: "Content pack generated!",
+        title: regenerate ? "Content pack regenerated!" : "Content pack generated!",
         description: "Your AI-powered content is ready.",
       });
     } catch (error: any) {
       console.error("Error generating content pack:", error);
       
-      // Handle specific error cases
-      if (error.message?.includes("Rate limit")) {
+      if (error.message?.includes("Rate limit") || error.message?.includes("429")) {
         toast({
           title: "Rate limit exceeded",
           description: "Please wait a moment and try again.",
           variant: "destructive",
         });
-      } else if (error.message?.includes("Payment required") || error.message?.includes("credits")) {
+      } else if (error.message?.includes("Payment required") || error.message?.includes("402") || error.message?.includes("credits")) {
         toast({
           title: "AI credits exhausted",
           description: "Please add credits to continue generating content.",
@@ -150,6 +221,7 @@ const ContentPack = () => {
       }
     } finally {
       setIsLoading(false);
+      setIsRegenerating(false);
     }
   };
 
@@ -178,13 +250,53 @@ const ContentPack = () => {
     </Button>
   );
 
+  // Subscription check loading state
+  if (checkingSubscription) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // No active subscription
+  if (!hasActiveSubscription) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto text-center py-16">
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-primary/10 via-card to-accent/10 border border-primary/20">
+            <Lock className="h-16 w-16 text-primary mx-auto mb-4" />
+            <h2 className="font-display text-2xl font-bold mb-2">
+              Premium Feature
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Content Pack generation requires an active subscription. Upgrade to unlock AI-powered scripts, hooks, and more.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="hero" onClick={() => navigate("/billing")}>
+                Upgrade Now
+              </Button>
+              <Button variant="outline" onClick={() => navigate(`/app/story/${id}`)}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Story
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Loading content
   if (isLoading) {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center py-16 gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <div className="text-center">
-            <h3 className="font-display text-xl font-semibold mb-2">Generating Content Pack</h3>
+            <h3 className="font-display text-xl font-semibold mb-2">Loading Content Pack</h3>
             <p className="text-muted-foreground">This may take a moment...</p>
           </div>
         </div>
@@ -192,15 +304,42 @@ const ContentPack = () => {
     );
   }
 
+  // No content pack exists yet
   if (!contentPack) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <p className="text-muted-foreground">Failed to load content pack.</p>
-          <Button onClick={generateContentPack}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Try Again
-          </Button>
+        <div className="max-w-2xl mx-auto">
+          <Link to={`/app/story/${id}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Story
+          </Link>
+
+          <div className="text-center py-12">
+            <div className="p-8 rounded-2xl bg-gradient-to-r from-primary/10 via-card to-accent/10 border border-primary/20">
+              <Youtube className="h-16 w-16 text-primary mx-auto mb-4" />
+              <h2 className="font-display text-2xl font-bold mb-2">
+                No Content Pack Yet
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                Generate an AI-powered content pack with YouTube scripts, TikTok scripts, hooks, and more.
+              </p>
+              <Button 
+                variant="hero" 
+                size="lg"
+                onClick={() => generateContentPack(false)}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Content Pack"
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -209,11 +348,30 @@ const ContentPack = () => {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <Link to={`/app/story/${id}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Story
-        </Link>
+        {/* Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <Link to={`/app/story/${id}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Story
+          </Link>
+          <Button 
+            variant="outline" 
+            onClick={() => generateContentPack(true)}
+            disabled={isRegenerating}
+          >
+            {isRegenerating ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Regenerating...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Regenerate Pack
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* Header */}
         <div className="mb-8">
@@ -282,7 +440,7 @@ const ContentPack = () => {
                       onClick={() => copyToClipboard(hook, `Hook ${i + 1}`)}
                     >
                       <span className="text-primary font-mono text-sm shrink-0">
-                        {String(i + 1).padStart(2, '0')}
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                       <span className="text-sm">{hook}</span>
                       <Copy className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-auto shrink-0" />
