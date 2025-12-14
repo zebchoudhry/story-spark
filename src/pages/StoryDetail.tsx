@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,40 +13,96 @@ import {
   Sparkles,
   Loader2
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
 
-// Mock story data
-const mockStory = {
-  id: "1",
-  title: "Massive UFO Sighting Over Phoenix Captured by Multiple Witnesses",
-  summaryShort: "Dozens of residents in the Phoenix metropolitan area reported seeing a massive triangular object hovering silently in the night sky for over 30 minutes.",
-  summaryLong: "On the evening of March 13th, dozens of residents across the Phoenix metropolitan area reported witnessing an extraordinary aerial phenomenon. Multiple independent witnesses described a massive triangular object, estimated to be over a mile wide, hovering silently in the night sky. The object was observed for approximately 30 minutes before slowly moving north and disappearing over the horizon. Unlike conventional aircraft, the object made no sound and displayed unusual lighting patterns along its edges. Several witnesses captured video footage on their phones, which has since been analyzed by independent researchers. Local authorities have not issued an official statement, and the FAA reported no unusual aircraft in the area during the time of the sightings.",
-  whyInteresting: "This sighting is particularly compelling because of the sheer number of independent witnesses, the extended duration of the observation, and the multiple pieces of video evidence. The similarities to the famous 1997 Phoenix Lights incident make this especially noteworthy for content creators covering UFO phenomena.",
-  category: "ufo" as const,
-  trendScore: "hot" as const,
-  credibility: "high" as const,
-  sourceName: "r/UFOs",
-  sourceLink: "https://reddit.com/r/UFOs",
-  publishedAt: "2 hours ago",
+interface StoryData {
+  id: string;
+  title: string;
+  summary_short: string;
+  summary_long: string | null;
+  why_interesting: string | null;
+  category: "ufo" | "paranormal" | "unresolved" | "weird_news";
+  trend_score: "hot" | "warm" | "cold";
+  credibility: "low" | "medium" | "high";
+  source_name: string;
+  source_link: string | null;
+  published_at: string | null;
+}
+
+const categoryLabels: Record<string, string> = {
+  ufo: "UFO",
+  paranormal: "Paranormal",
+  unresolved: "Unresolved",
+  weird_news: "Weird News",
 };
 
 const StoryDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [story, setStory] = useState<StoryData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchStory();
+    }
+  }, [id]);
+
+  const fetchStory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("story_cards")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!data) {
+        toast({
+          title: "Story not found",
+          description: "This story may have been removed.",
+          variant: "destructive",
+        });
+        navigate("/app");
+        return;
+      }
+
+      setStory(data as StoryData);
+    } catch (error) {
+      console.error("Error fetching story:", error);
+      toast({
+        title: "Error loading story",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleGeneratePack = () => {
     setIsGenerating(true);
-    // Simulate generation - in real app this would call the API
-    setTimeout(() => {
-      window.location.href = `/app/story/${id}/pack`;
-    }, 2000);
+    navigate(`/app/story/${id}/pack`);
   };
 
-  const categoryLabels = {
-    ufo: "UFO",
-    paranormal: "Paranormal",
-    unresolved: "Unresolved",
-    weird: "Weird News",
-  };
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!story) {
+    return null;
+  }
 
   return (
     <DashboardLayout>
@@ -60,34 +116,43 @@ const StoryDetail = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-2 mb-4">
-            <Badge variant={mockStory.category}>{categoryLabels[mockStory.category]}</Badge>
-            <Badge variant={mockStory.trendScore}>
+            <Badge variant={story.category === "weird_news" ? "weird" : story.category}>{categoryLabels[story.category]}</Badge>
+            <Badge variant={story.trend_score}>
               <TrendingUp className="h-3 w-3 mr-1" />
-              {mockStory.trendScore.toUpperCase()}
+              {story.trend_score.toUpperCase()}
             </Badge>
             <Badge variant="outline">
               <Shield className="h-3 w-3 mr-1" />
-              {mockStory.credibility.charAt(0).toUpperCase() + mockStory.credibility.slice(1)} Credibility
+              {story.credibility.charAt(0).toUpperCase() + story.credibility.slice(1)} Credibility
             </Badge>
           </div>
           
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            {mockStory.title}
+            {story.title}
           </h1>
           
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <a 
-              href={mockStory.sourceLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 hover:text-primary transition-colors"
-            >
-              <ExternalLink className="h-4 w-4" />
-              {mockStory.sourceName}
-            </a>
+            {story.source_link ? (
+              <a 
+                href={story.source_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 hover:text-primary transition-colors"
+              >
+                <ExternalLink className="h-4 w-4" />
+                {story.source_name}
+              </a>
+            ) : (
+              <span className="flex items-center gap-1">
+                <ExternalLink className="h-4 w-4" />
+                {story.source_name}
+              </span>
+            )}
             <span className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              {mockStory.publishedAt}
+              {story.published_at 
+                ? formatDistanceToNow(new Date(story.published_at), { addSuffix: true })
+                : "Recently"}
             </span>
           </div>
         </div>
@@ -100,24 +165,26 @@ const StoryDetail = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed">
-                {mockStory.summaryLong}
+                {story.summary_long || story.summary_short}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-accent" />
-                Why This Story is Interesting
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {mockStory.whyInteresting}
-              </p>
-            </CardContent>
-          </Card>
+          {story.why_interesting && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-accent" />
+                  Why This Story is Interesting
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground leading-relaxed">
+                  {story.why_interesting}
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Generate CTA */}

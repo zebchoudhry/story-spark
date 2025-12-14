@@ -1,81 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { StoryCard, StoryCardData } from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, TrendingUp, Zap, Ghost, HelpCircle, Newspaper } from "lucide-react";
-
-// Mock data for demonstration
-const mockStories: StoryCardData[] = [
-  {
-    id: "1",
-    title: "Massive UFO Sighting Over Phoenix Captured by Multiple Witnesses",
-    summaryShort: "Dozens of residents in the Phoenix metropolitan area reported seeing a massive triangular object hovering silently in the night sky for over 30 minutes.",
-    category: "ufo",
-    trendScore: "hot",
-    credibility: "high",
-    sourceName: "r/UFOs",
-    publishedAt: "2h ago",
-  },
-  {
-    id: "2",
-    title: "Abandoned Hospital Night Watchman Reports Unexplained Phenomena",
-    summaryShort: "A former security guard at Waverly Hills Sanatorium comes forward with decades of paranormal encounters during his night shifts.",
-    category: "paranormal",
-    trendScore: "warm",
-    credibility: "medium",
-    sourceName: "r/Paranormal",
-    publishedAt: "5h ago",
-  },
-  {
-    id: "3",
-    title: "Cold Case: Missing Hiker's Camera Found 15 Years Later With Disturbing Images",
-    summaryShort: "A trail maintenance crew discovered camera equipment belonging to a hiker who vanished in 2009. The final photos raise more questions than answers.",
-    category: "unresolved",
-    trendScore: "hot",
-    credibility: "high",
-    sourceName: "r/UnresolvedMysteries",
-    publishedAt: "8h ago",
-  },
-  {
-    id: "4",
-    title: "Florida Man Claims Pet Alligator Can Predict Lottery Numbers",
-    summaryShort: "A Sarasota resident insists his 12-foot alligator 'Gatorade' has accurately predicted three lottery winning numbers this year alone.",
-    category: "weird",
-    trendScore: "cold",
-    credibility: "low",
-    sourceName: "WeirdNews RSS",
-    publishedAt: "12h ago",
-  },
-  {
-    id: "5",
-    title: "New NUFORC Report: Pilot Describes Close Encounter at 35,000 Feet",
-    summaryShort: "A commercial airline pilot filed a detailed report of a luminous spherical object that paced their aircraft for several minutes over the Atlantic.",
-    category: "ufo",
-    trendScore: "hot",
-    credibility: "high",
-    sourceName: "NUFORC",
-    publishedAt: "1d ago",
-  },
-  {
-    id: "6",
-    title: "Victorian-Era Murder Case Solved Using Modern DNA Technology",
-    summaryShort: "A 130-year-old murder mystery from London's East End has finally been solved thanks to genealogical DNA testing and dedicated amateur historians.",
-    category: "unresolved",
-    trendScore: "warm",
-    credibility: "high",
-    sourceName: "r/UnresolvedMysteries",
-    publishedAt: "1d ago",
-  },
-];
+import { Search, TrendingUp, Zap, Ghost, HelpCircle, Newspaper, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
 
 const categories = [
   { id: "all", label: "All", icon: Zap },
   { id: "ufo", label: "UFO", icon: TrendingUp },
   { id: "paranormal", label: "Paranormal", icon: Ghost },
   { id: "unresolved", label: "Unresolved", icon: HelpCircle },
-  { id: "weird", label: "Weird News", icon: Newspaper },
+  { id: "weird_news", label: "Weird News", icon: Newspaper },
 ];
 
 const trendFilters = [
@@ -86,11 +24,53 @@ const trendFilters = [
 ];
 
 const Dashboard = () => {
+  const [stories, setStories] = useState<StoryCardData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTrend, setSelectedTrend] = useState("all");
+  const { toast } = useToast();
 
-  const filteredStories = mockStories.filter((story) => {
+  useEffect(() => {
+    fetchStories();
+  }, []);
+
+  const fetchStories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("story_cards")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      const formattedStories: StoryCardData[] = (data || []).map((story) => ({
+        id: story.id,
+        title: story.title,
+        summaryShort: story.summary_short,
+        category: story.category as "ufo" | "paranormal" | "unresolved" | "weird_news",
+        trendScore: story.trend_score as "hot" | "warm" | "cold",
+        credibility: story.credibility as "low" | "medium" | "high",
+        sourceName: story.source_name,
+        publishedAt: story.published_at 
+          ? formatDistanceToNow(new Date(story.published_at), { addSuffix: true })
+          : "Recently",
+      }));
+
+      setStories(formattedStories);
+    } catch (error) {
+      console.error("Error fetching stories:", error);
+      toast({
+        title: "Error loading stories",
+        description: "Please try refreshing the page.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredStories = stories.filter((story) => {
     const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       story.summaryShort.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || story.category === selectedCategory;
@@ -149,19 +129,30 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stories Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredStories.map((story) => (
-          <StoryCard key={story.id} story={story} />
-        ))}
-      </div>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
 
-      {filteredStories.length === 0 && (
+      {/* Stories Grid */}
+      {!isLoading && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStories.map((story) => (
+            <StoryCard key={story.id} story={story} />
+          ))}
+        </div>
+      )}
+
+      {!isLoading && filteredStories.length === 0 && (
         <div className="text-center py-16">
           <Ghost className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="font-display text-xl font-semibold mb-2">No stories found</h3>
           <p className="text-muted-foreground">
-            Try adjusting your filters or search query
+            {stories.length === 0 
+              ? "Stories are being collected. Check back soon!"
+              : "Try adjusting your filters or search query"}
           </p>
         </div>
       )}

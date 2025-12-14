@@ -7,7 +7,7 @@ export interface StoryCardData {
   id: string;
   title: string;
   summaryShort: string;
-  category: "ufo" | "paranormal" | "unresolved" | "weird";
+  category: "ufo" | "paranormal" | "unresolved" | "weird_news";
   trendScore: "hot" | "warm" | "cold";
   credibility: "low" | "medium" | "high";
   sourceName: string;
@@ -22,7 +22,7 @@ const categoryLabels = {
   ufo: "UFO",
   paranormal: "Paranormal",
   unresolved: "Unresolved",
-  weird: "Weird News",
+  weird_news: "Weird News",
 };
 
 const trendLabels = {
@@ -43,7 +43,7 @@ export const StoryCard = ({ story }: StoryCardProps) => {
       <Card variant="story" className="h-full cursor-pointer">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant={story.category}>{categoryLabels[story.category]}</Badge>
+            <Badge variant={story.category === "weird_news" ? "weird" : story.category}>{categoryLabels[story.category]}</Badge>
             <Badge variant={story.trendScore}>
               <TrendingUp className="h-3 w-3 mr-1" />
               {trendLabels[story.trendScore]}
