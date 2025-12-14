@@ -100,8 +100,13 @@ Deno.serve(async (req) => {
   const cronSecret = req.headers.get("x-cron-secret");
   const expectedSecret = Deno.env.get("INGEST_SECRET");
 
+  console.log("[ingest-stories] Received secret length:", cronSecret?.length || 0);
+  console.log("[ingest-stories] Expected secret length:", expectedSecret?.length || 0);
+  console.log("[ingest-stories] Expected secret exists:", !!expectedSecret);
+
   if (!cronSecret || cronSecret !== expectedSecret) {
     console.error("[ingest-stories] Unauthorized: Invalid or missing x-cron-secret");
+    console.error("[ingest-stories] Match:", cronSecret === expectedSecret);
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
