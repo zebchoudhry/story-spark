@@ -39,8 +39,9 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from("story_cards")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select("id, title, summary_short, category, trend_score, credibility, source_name, published_at")
+        .order("created_at", { ascending: false })
+        .limit(50);
 
       if (error) throw error;
 
