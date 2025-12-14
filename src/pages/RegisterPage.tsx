@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Radio, Eye, EyeOff, Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -10,12 +12,60 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { signUp, user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/app", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 8 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
-    // TODO: Implement with Supabase Auth
-    setTimeout(() => setIsLoading(false), 1000);
+
+    const { error } = await signUp(email, password);
+
+    if (error) {
+      let description = error.message;
+      if (error.message.includes("already registered")) {
+        description = "This email is already registered. Try signing in instead.";
+      }
+      toast({
+        title: "Sign up failed",
+        description,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Account created!",
+        description: "Welcome to CreatorSignals. You can now explore mysteries.",
+      });
+      navigate("/app");
+    }
+
+    setIsLoading(false);
   };
 
   const passwordRequirements = [
@@ -56,7 +106,7 @@ const RegisterPage = () => {
 
           <h1 className="font-display text-3xl font-bold mb-2">Create your account</h1>
           <p className="text-muted-foreground mb-8">
-            Start your 7-day free trial — no credit card required
+            Start your free trial — explore mystery stories instantly
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -133,7 +183,7 @@ const RegisterPage = () => {
               type="submit" 
               variant="hero" 
               className="w-full" 
-              disabled={isLoading || password !== confirmPassword}
+              disabled={isLoading || password !== confirmPassword || password.length < 8}
             >
               {isLoading ? "Creating account..." : "Create Account"}
             </Button>
