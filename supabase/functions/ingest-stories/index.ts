@@ -171,33 +171,76 @@ Deno.serve(async (req) => {
   console.log("[ingest-stories] Starting Reddit ingestion...");
   const subreddits = ["UFOs", "Paranormal", "UnresolvedMysteries"];
 
+  // Helper function to fetch Reddit with fallback endpoints
+  async function fetchReddit(subreddit: string): Promise<any[]> {
+    const urls = [
+      `https://www.reddit.com/r/${subreddit}/new.json?limit=20`,
+      `https://old.reddit.com/r/${subreddit}/new.json?limit=20`,
+      `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
+    ];
+
+    for (const url of urls) {
+      try {
+        console.log(`[ingest-stories] Trying Reddit endpoint: ${url}`);
+        
+        const res = await fetch(url, {
+          headers: {
+            "User-Agent": "CreatorSignalsBot/1.0 (https://creatorsignals.app)",
+            "Accept": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          console.log(`[ingest-stories] Reddit fetch failed r/${subreddit} [${url}] → ${res.status}`);
+          
+          // If rate limited (429) or forbidden (403), try next endpoint
+          if (res.status === 429 || res.status === 403) {
+            continue;
+          }
+          continue;
+        }
+
+        const data = await res.json();
+        
+        if (!data?.data?.children) {
+          console.log(`[ingest-stories] No children in response from ${url}`);
+          continue;
+        }
+
+        console.log(`[ingest-stories] Successfully fetched ${data.data.children.length} posts from ${url}`);
+        return data.data.children;
+      } catch (e) {
+        console.log(`[ingest-stories] Error fetching ${url} →`, e);
+        continue;
+      }
+    }
+
+    console.log(`[ingest-stories] All Reddit endpoints failed for r/${subreddit}`);
+    return []; // No data from any endpoint
+  }
+
   for (const subreddit of subreddits) {
     try {
-      const response = await fetch(
-        `https://www.reddit.com/r/${subreddit}/new.json?limit=20`,
-        {
-          headers: {
-            "User-Agent": "CreatorSignals/1.0 (Story Ingestion Bot)",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error(`[ingest-stories] Reddit fetch failed for r/${subreddit}: ${response.status}`);
+      const posts = await fetchReddit(subreddit);
+      
+      if (posts.length === 0) {
+        console.log(`[ingest-stories] No posts retrieved for r/${subreddit}`);
         continue;
       }
 
-      const data = await response.json();
-      const posts = data?.data?.children || [];
-
       for (const post of posts) {
         const p = post.data;
+        
+        if (!p || !p.id || !p.title) {
+          continue;
+        }
+
         const inserted = await insertStory({
           source_type: "reddit",
           source_name: `r/${subreddit}`,
           external_id: p.id,
           title: p.title,
-          body: p.selftext || null,
+          body: p.selftext ?? "",
           url: `https://reddit.com${p.permalink}`,
           published_at: new Date(p.created_utc * 1000).toISOString(),
         });
@@ -205,11 +248,13 @@ Deno.serve(async (req) => {
         if (inserted) redditCount++;
       }
 
-      console.log(`[ingest-stories] Reddit r/${subreddit}: processed ${posts.length} posts`);
+      console.log(`[ingest-stories] Reddit r/${subreddit}: inserted ${redditCount} posts`);
     } catch (err) {
       console.error(`[ingest-stories] Reddit error for r/${subreddit}:`, err);
     }
   }
+  
+  console.log(`[ingest-stories] Reddit ingestion complete. Total inserted: ${redditCount}`);
 
   // 2. RSS INGESTION
   console.log("[ingest-stories] Starting RSS ingestion...");
