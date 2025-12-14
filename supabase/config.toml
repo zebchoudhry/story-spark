@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.process-story]
 verify_jwt = true
+
+[functions.ingest-stories]
+verify_jwt = false
