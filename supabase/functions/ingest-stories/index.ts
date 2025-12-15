@@ -170,6 +170,7 @@ Deno.serve(async (req) => {
   // 1. REDDIT INGESTION
   console.log("[ingest-stories] Starting Reddit ingestion...");
   const subreddits = ["UFOs", "Paranormal", "UnresolvedMysteries"];
+  const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 
   // Helper function to fetch Reddit with fallback endpoints
   async function fetchReddit(subreddit: string): Promise<any[]> {
@@ -179,6 +180,7 @@ Deno.serve(async (req) => {
       `https://www.reddit.com/r/${subreddit}/hot.json?limit=20`,
     ];
 
+    // Try direct API endpoints first
     for (const url of urls) {
       try {
         console.log(`[ingest-stories] Trying Reddit endpoint: ${url}`);
@@ -192,11 +194,6 @@ Deno.serve(async (req) => {
 
         if (!res.ok) {
           console.log(`[ingest-stories] Reddit fetch failed r/${subreddit} [${url}] → ${res.status}`);
-          
-          // If rate limited (429) or forbidden (403), try next endpoint
-          if (res.status === 429 || res.status === 403) {
-            continue;
-          }
           continue;
         }
 
@@ -215,8 +212,85 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Fallback to Firecrawl scraping if API fails
+    if (FIRECRAWL_API_KEY) {
+      console.log(`[ingest-stories] Trying Firecrawl scraping for r/${subreddit}...`);
+      try {
+        const firecrawlRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${FIRECRAWL_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            url: `https://old.reddit.com/r/${subreddit}/new/`,
+            formats: ["markdown", "links"],
+            onlyMainContent: true,
+          }),
+        });
+
+        if (firecrawlRes.ok) {
+          const firecrawlData = await firecrawlRes.json();
+          const markdown = firecrawlData.data?.markdown || firecrawlData.markdown || "";
+          const links = firecrawlData.data?.links || firecrawlData.links || [];
+          
+          // Parse Reddit posts from markdown
+          const posts: any[] = [];
+          const postPattern = /###\s*\[([^\]]+)\]\((\/r\/[^)]+)\)/g;
+          let match;
+          
+          while ((match = postPattern.exec(markdown)) !== null) {
+            const title = match[1];
+            const permalink = match[2];
+            const postId = permalink.split("/comments/")[1]?.split("/")[0] || "";
+            
+            if (postId && title) {
+              posts.push({
+                data: {
+                  id: postId,
+                  title: title,
+                  selftext: "",
+                  permalink: permalink,
+                  created_utc: Date.now() / 1000, // Use current time as fallback
+                }
+              });
+            }
+          }
+          
+          // Also try to extract from links
+          for (const link of links) {
+            if (link.includes("/comments/") && !posts.some(p => link.includes(p.data.id))) {
+              const parts = link.split("/comments/");
+              if (parts[1]) {
+                const postId = parts[1].split("/")[0];
+                const titlePart = parts[1].split("/")[1]?.replace(/_/g, " ") || "Reddit Post";
+                posts.push({
+                  data: {
+                    id: postId,
+                    title: titlePart,
+                    selftext: "",
+                    permalink: `/r/${subreddit}/comments/${postId}/${parts[1].split("/")[1] || ""}`,
+                    created_utc: Date.now() / 1000,
+                  }
+                });
+              }
+            }
+          }
+          
+          if (posts.length > 0) {
+            console.log(`[ingest-stories] Firecrawl extracted ${posts.length} posts for r/${subreddit}`);
+            return posts.slice(0, 20);
+          }
+        } else {
+          console.log(`[ingest-stories] Firecrawl failed: ${firecrawlRes.status}`);
+        }
+      } catch (e) {
+        console.log(`[ingest-stories] Firecrawl error:`, e);
+      }
+    }
+
     console.log(`[ingest-stories] All Reddit endpoints failed for r/${subreddit}`);
-    return []; // No data from any endpoint
+    return [];
   }
 
   for (const subreddit of subreddits) {
@@ -228,6 +302,7 @@ Deno.serve(async (req) => {
         continue;
       }
 
+      let subredditInserted = 0;
       for (const post of posts) {
         const p = post.data;
         
@@ -245,10 +320,13 @@ Deno.serve(async (req) => {
           published_at: new Date(p.created_utc * 1000).toISOString(),
         });
 
-        if (inserted) redditCount++;
+        if (inserted) {
+          redditCount++;
+          subredditInserted++;
+        }
       }
 
-      console.log(`[ingest-stories] Reddit r/${subreddit}: inserted ${redditCount} posts`);
+      console.log(`[ingest-stories] Reddit r/${subreddit}: inserted ${subredditInserted} posts`);
     } catch (err) {
       console.error(`[ingest-stories] Reddit error for r/${subreddit}:`, err);
     }
