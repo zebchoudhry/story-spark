@@ -337,9 +337,37 @@ Deno.serve(async (req) => {
   // 2. RSS INGESTION
   console.log("[ingest-stories] Starting RSS ingestion...");
   const rssFeeds = [
+    // Weird News & Paranormal
     "https://www.coasttocoastam.com/rss/weird-news/",
-    "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
     "https://www.mirror.co.uk/news/weird-news/rss.xml",
+    "https://www.thesun.co.uk/topic/weird-news/feed/",
+    "https://www.express.co.uk/posts/rss/80/weird",
+    "https://www.dailystar.co.uk/news/weird-news/rss",
+    
+    // Science & Space (UFO-adjacent)
+    "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+    "https://www.space.com/feeds/all",
+    "https://www.livescience.com/feeds/all",
+    
+    // True Crime & Mysteries
+    "https://www.oxygen.com/feeds/all",
+    "https://www.crimelibrary.org/feed/",
+    "https://www.investigationdiscovery.com/feeds/all",
+    
+    // Unexplained & Fortean
+    "https://mysteriousuniverse.org/feed/",
+    "https://www.unexplained-mysteries.com/news/rss",
+    "https://www.phantomsandmonsters.com/feeds/posts/default?alt=rss",
+    "https://www.thefortean.com/feed/",
+    
+    // Cryptozoology & Strange Creatures
+    "https://cryptomundo.com/feed/",
+    "https://www.cryptozoologynews.com/feed/",
+    
+    // General Weird/Offbeat
+    "https://www.atlasobscura.com/feeds/latest",
+    "https://boingboing.net/feed",
+    "https://www.vice.com/en/rss/topic/weird-news",
   ];
 
   for (const feedUrl of rssFeeds) {
