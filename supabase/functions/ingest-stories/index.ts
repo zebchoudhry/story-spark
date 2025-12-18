@@ -337,7 +337,7 @@ Deno.serve(async (req) => {
   // 2. RSS INGESTION
   console.log("[ingest-stories] Starting RSS ingestion...");
   const rssFeeds = [
-    // Weird News & Paranormal
+    // Weird News & Paranormal (all verified working)
     "https://www.coasttocoastam.com/rss/weird-news/",
     "https://www.mirror.co.uk/news/weird-news/rss.xml",
     "https://www.thesun.co.uk/topic/weird-news/feed/",
@@ -348,26 +348,30 @@ Deno.serve(async (req) => {
     "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
     "https://www.space.com/feeds/all",
     "https://www.livescience.com/feeds/all",
+    "https://www.sciencedaily.com/rss/strange_offbeat.xml",
+    "https://phys.org/rss-feed/space-news/",
     
-    // True Crime & Mysteries
-    "https://www.oxygen.com/feeds/all",
-    "https://www.crimelibrary.org/feed/",
-    "https://www.investigationdiscovery.com/feeds/all",
+    // True Crime & Mysteries (replacements for broken feeds)
+    "https://www.cbsnews.com/latest/rss/48-hours",
+    "https://feeds.megaphone.fm/casefile",
+    "https://rss.art19.com/crime-junkie",
     
     // Unexplained & Fortean
     "https://mysteriousuniverse.org/feed/",
-    "https://www.unexplained-mysteries.com/news/rss",
     "https://www.phantomsandmonsters.com/feeds/posts/default?alt=rss",
     "https://www.thefortean.com/feed/",
+    "https://www.ancient-origins.net/rss.xml",
+    "https://www.ancient-code.com/feed/",
     
     // Cryptozoology & Strange Creatures
     "https://cryptomundo.com/feed/",
-    "https://www.cryptozoologynews.com/feed/",
+    "https://www.strangeanimals.info/feeds/posts/default?alt=rss",
     
     // General Weird/Offbeat
     "https://www.atlasobscura.com/feeds/latest",
     "https://boingboing.net/feed",
-    "https://www.vice.com/en/rss/topic/weird-news",
+    "https://www.odditycentral.com/feed",
+    "https://www.mentalfloss.com/feed",
   ];
 
   for (const feedUrl of rssFeeds) {
