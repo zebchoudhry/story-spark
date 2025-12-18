@@ -351,10 +351,22 @@ Deno.serve(async (req) => {
     "https://www.sciencedaily.com/rss/strange_offbeat.xml",
     "https://phys.org/rss-feed/space-news/",
     
-    // True Crime & Mysteries (replacements for broken feeds)
+    // UFO/UAP Specific (NEW)
+    "https://openminds.tv/feed/",
+    "https://www.latest-ufo-sightings.net/feed/atom",
+    "https://www.theblackvault.com/casefiles/feed/",
+    "https://www.earthfiles.com/feed/",
+    "https://feeds.feedburner.com/TheUFOChronicles",
+    
+    // True Crime & Mysteries
     "https://www.cbsnews.com/latest/rss/48-hours",
     "https://feeds.megaphone.fm/casefile",
     "https://rss.art19.com/crime-junkie",
+    "https://defrostingcoldcases.com/feed/",
+    "https://truecrimesocietyblog.com/feed/",
+    "https://forensicfilesnow.com/index.php/feed/",
+    "https://www.oddmurdersandmysteries.com/feed/",
+    "https://www.truecasefiles.com/feeds/posts/default?alt=rss",
     
     // Unexplained & Fortean
     "https://mysteriousuniverse.org/feed/",
@@ -366,6 +378,9 @@ Deno.serve(async (req) => {
     // Cryptozoology & Strange Creatures
     "https://cryptomundo.com/feed/",
     "https://www.strangeanimals.info/feeds/posts/default?alt=rss",
+    "https://sasquatchchronicles.com/feed/",
+    "https://sharonahill.com/feed/",
+    "http://kevinrandle.blogspot.com/feeds/posts/default",
     
     // General Weird/Offbeat
     "https://www.atlasobscura.com/feeds/latest",
