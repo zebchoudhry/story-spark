@@ -381,6 +381,27 @@ Deno.serve(async (req) => {
     "https://sasquatchchronicles.com/feed/",
     "https://sharonahill.com/feed/",
     "http://kevinrandle.blogspot.com/feeds/posts/default",
+    "https://www.bfro.net/gdb/rss.asp",
+    
+    // Ghost Stories & Hauntings
+    "https://ghostvillage.com/feed/",
+    "https://thedeadhistory.com/feed/",
+    "https://www.theparacast.com/feed/",
+    "https://jimharold.com/feed/",
+    
+    // UFO Podcasts & Blogs
+    "https://www.ufosightingsdaily.com/feeds/posts/default?alt=rss",
+    "https://www.ufo-blogger.com/feeds/posts/default?alt=rss",
+    "https://podcast.earthfiles.com/feed/",
+    
+    // More True Crime
+    "https://www.trailwentcold.com/feed/",
+    "https://coldcasecanada.podbean.com/feed.xml",
+    
+    // More Weird News
+    "https://weekinweird.com/feed/",
+    "https://www.npr.org/rss/rss.php?id=1008",
+    "https://tetzoo.com/podcast?format=rss",
     
     // General Weird/Offbeat
     "https://www.atlasobscura.com/feeds/latest",
