@@ -3,7 +3,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StoryCard, StoryCardData } from "@/components/StoryCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, TrendingUp, Zap, Ghost, HelpCircle, Newspaper, Loader2 } from "lucide-react";
+import { Search, TrendingUp, Zap, Ghost, HelpCircle, Newspaper, Loader2, Skull, Footprints, Eye } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
@@ -12,6 +12,9 @@ const categories = [
   { id: "all", label: "All", icon: Zap },
   { id: "ufo", label: "UFO", icon: TrendingUp },
   { id: "paranormal", label: "Paranormal", icon: Ghost },
+  { id: "true_crime", label: "True Crime", icon: Skull },
+  { id: "cryptid", label: "Cryptid", icon: Footprints },
+  { id: "conspiracy", label: "Conspiracy", icon: Eye },
   { id: "unresolved", label: "Unresolved", icon: HelpCircle },
   { id: "weird_news", label: "Weird News", icon: Newspaper },
 ];
@@ -41,7 +44,7 @@ const Dashboard = () => {
         .from("story_cards")
         .select("id, title, summary_short, category, trend_score, credibility, source_name, published_at")
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(200);
 
       if (error) throw error;
 
@@ -49,7 +52,7 @@ const Dashboard = () => {
         id: story.id,
         title: story.title,
         summaryShort: story.summary_short,
-        category: story.category as "ufo" | "paranormal" | "unresolved" | "weird_news",
+        category: story.category as "ufo" | "paranormal" | "true_crime" | "cryptid" | "conspiracy" | "unresolved" | "weird_news",
         trendScore: story.trend_score as "hot" | "warm" | "cold",
         credibility: story.credibility as "low" | "medium" | "high",
         sourceName: story.source_name,
