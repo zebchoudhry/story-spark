@@ -408,6 +408,79 @@ Deno.serve(async (req) => {
     "https://boingboing.net/feed",
     "https://www.odditycentral.com/feed",
     "https://www.mentalfloss.com/feed",
+    
+    // ==================== YOUTUBE CHANNELS ====================
+    
+    // UFO/UAP YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCuHn_E6xPuhI_jiOvQXaVIg", // The Black Vault
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCvSbzThCfsiETLp3eOdVkNw", // That UFO Podcast
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCZo6c5e3u_K96vP8z5b0eWg", // Jeremy Corbell
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC6qRJj0aAxwLhIGMsAdUf_A", // Richard Dolan
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCJkUnypo-HJs0Q_FzYJZYfQ", // Project Unity
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCPaRG_5YlBnKnL4Rj5LGJEg", // MUFON
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCXJ_uLWdfQXBcNQfYbAgCDw", // Open Minds UFO
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCq9sAJfIGBNzRF_gE9z1Ntg", // UFO News Network
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCkoHrKXuemzLwmFcf5IFrBA", // Third Phase of Moon
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCp1vgvfT4ZjVXrZxKrdV7jA", // secureteam10
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCvHqXK_Hz79tjqRosK4tWYA", // UAMN TV
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC-VPSQdVNJyI1afN27L9JgQ", // The Unidentified Celebrity Review
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCBMDVNeC2XfuGW1c1MtSZKw", // UFO Lou
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA", // Computerphile (for AI/tech angle)
+    
+    // True Crime YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCYwVxWpjeKFWwu8TML-Te9A", // JCS Criminal Psychology
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCtPrkXdtCM5DACLufB9jbsA", // MrBallen
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCbk7M2E4LTrGlL4qR2Lp0Vg", // Lazy Masquerade
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCL44k-cLvKiMlFtEQxLj87w", // That Chapter
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCKKKmNJ2H1DjpRTHZyoLrvA", // Coffeehouse Crime
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCn4mZXJY0RCBrDxCv6IVSVg", // Unsolved Mysteries
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCG5e65R9xtD0Bt8ykh5Z6tg", // Stephanie Harlowe
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCRVrB5Q_j0fUpLq5-aEuX2A", // Criminally Listed
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCraGaSPRDfV1yN8Sz_yiurA", // Kendall Rae
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCObLy9sewv-n-OLnmsc1VyQ", // Dreading
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCaiHhkVxSyVbADBjF-5O9vQ", // Eleanor Neale
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCPaRf8BvvVhHrp_GJxlB9Jw", // Plagued Moth
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCEwq5dKr2nk7teLuKAf_IUw", // Explore With Us
+    
+    // Paranormal/Ghost Hunting YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC_LDtFt-RADYn6LHX8JKx3w", // Sam and Colby
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCR_P4fMlTqJM6qYwVlMOvXg", // Twin Paranormal
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCYZ6YR1DmRLrQPgKSNeRaGg", // The Paranormal Files
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCq52Fv9Jn7js4neFjaju3Fg", // OmarGoshTV
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCBnbnH-uK3b6K1SdoMY8aGQ", // Nuke's Top 5
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCmBbz_oJXjqJV2hYD3JB1ig", // The Ouija Brothers
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC8YnNDMPW5MtTNNmL8PgBYQ", // Mindseed TV
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCnI5v4yNLqF3a5oLEbTjz9Q", // Paranormal Quest
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC-VPSQdVNJyI1afN27L9JgQ", // Destination Fear
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCwHG1yUmL1jH0bE5kLQjt8g", // Amy's Crypt
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCnIfca4LPFVn8-FjpIVdhcw", // Slapped Ham
+    
+    // Cryptid/Mystery YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCfu4MCqbUGvcnQZ5uICx9RA", // Small Town Monsters
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCfmFLciPDc0Ecg5XqmHYNrw", // Nv Tv
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCrlveeKAIYhuBz6t2tyIXQg", // Monsters Among Us
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCpFFItkfZz1qz5PpHpqzYBw", // Nexpo
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCCD4-G3Aokt2sM7TYQV2HmA", // Bedtime Stories
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC3cpN6gcJQqcCM6mxRUo_dA", // Wendigoon
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCRcgy6GzDeccI7dkbbBna3Q", // Lemmino
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCuoMasRkMhlj1VNVAOJdw5w", // Bright Side (mysteries)
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC7gYQMjhANMH2sf7zSYm5qw", // Chills
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCnb-VTwBHEV3gtiB9di9DZQ", // Blameitonjorge
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCbAmPXBKLaLJBnhVf4A5J8Q", // Night Mind
+    
+    // Horror/Creepy Content YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCOu_8EzYzD6U_gJibTBWq7g", // Inside A Mind
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCBAX4VNBPxw6X0TqzAHm8fw", // ScareTheater
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCMu5gPmKp5av0QCAajKTMhw", // Mr Nightmare
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCG6N4YVID_b5Z9JfVVQM6Dg", // Corpse Husband
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCUHsOQOKrS6qQ1Ho_z6kGzA", // Let's Read
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCJEAgB6DsWs-npAoyM5b0Tw", // Darkness Prevails
+    
+    // Science/Mystery Documentary Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCVHFbqXqoYvEWM1Ddxl0QKg", // Vsauce 2
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCNUx9bQyEI0k6CQpo4TaNAw", // Real Stories
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCaMpkNJMOHZONyFzkb2BjPw", // Free Documentary
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q", // Kurzgesagt
   ];
 
   for (const feedUrl of rssFeeds) {
