@@ -247,7 +247,14 @@ export type Database = {
     Enums: {
       app_role: "user" | "admin"
       credibility_level: "low" | "medium" | "high"
-      story_category: "ufo" | "paranormal" | "unresolved" | "weird_news"
+      story_category:
+        | "ufo"
+        | "paranormal"
+        | "unresolved"
+        | "weird_news"
+        | "true_crime"
+        | "cryptid"
+        | "conspiracy"
       subscription_plan: "free" | "basic" | "pro"
       subscription_status: "active" | "trialing" | "cancelled" | "past_due"
       trend_score: "hot" | "warm" | "cold"
@@ -380,7 +387,15 @@ export const Constants = {
     Enums: {
       app_role: ["user", "admin"],
       credibility_level: ["low", "medium", "high"],
-      story_category: ["ufo", "paranormal", "unresolved", "weird_news"],
+      story_category: [
+        "ufo",
+        "paranormal",
+        "unresolved",
+        "weird_news",
+        "true_crime",
+        "cryptid",
+        "conspiracy",
+      ],
       subscription_plan: ["free", "basic", "pro"],
       subscription_status: ["active", "trialing", "cancelled", "past_due"],
       trend_score: ["hot", "warm", "cold"],

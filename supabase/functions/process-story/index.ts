@@ -25,8 +25,17 @@ serve(async (req) => {
 - summary_short (1 sentence, max 200 characters)
 - summary_long (3-5 sentence factual summary)
 - why_interesting (explain why creators may want to cover this, 2-3 sentences)
-- category (one of: ufo, paranormal, unresolved, weird_news)
+- category (one of: ufo, paranormal, true_crime, cryptid, conspiracy, unresolved, weird_news)
 - credibility (one of: low, medium, high - based on source reliability and claims)
+
+Category definitions:
+- ufo: UFO sightings, UAP, alien encounters, government disclosure
+- paranormal: Ghosts, hauntings, spirits, supernatural events
+- true_crime: Murder, cold cases, criminal psychology, investigations
+- cryptid: Bigfoot, cryptozoology, mysterious creatures, lake monsters
+- conspiracy: Alternative history, ancient civilizations, cover-ups, secret societies
+- unresolved: Unsolved mysteries, disappearances, internet mysteries
+- weird_news: Bizarre news, odd events, strange discoveries
 
 Return ONLY valid JSON with these exact keys. No additional text or markdown.`;
 
@@ -93,7 +102,7 @@ ${body}`;
     }
 
     // Validate and normalize the response
-    const validCategories = ["ufo", "paranormal", "unresolved", "weird_news"];
+    const validCategories = ["ufo", "paranormal", "true_crime", "cryptid", "conspiracy", "unresolved", "weird_news"];
     const validCredibility = ["low", "medium", "high"];
     
     if (!validCategories.includes(storyCard.category)) {

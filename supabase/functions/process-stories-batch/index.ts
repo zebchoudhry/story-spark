@@ -79,9 +79,18 @@ Return ONLY valid JSON with these exact keys:
 - summary_short: One sentence summary, max 200 characters
 - summary_long: 3-5 sentence factual summary of the story
 - why_interesting: 2-3 sentences explaining why creators would want to cover this
-- category: One of: ufo, paranormal, unresolved, weird_news
+- category: One of: ufo, paranormal, true_crime, cryptid, conspiracy, unresolved, weird_news
 - credibility: One of: low, medium, high (based on source reliability and verifiability)
 - trend_score: One of: hot, warm, cold (based on recency and viral potential)
+
+Category definitions:
+- ufo: UFO sightings, UAP, alien encounters, government disclosure
+- paranormal: Ghosts, hauntings, spirits, supernatural events
+- true_crime: Murder, cold cases, criminal psychology, investigations
+- cryptid: Bigfoot, cryptozoology, mysterious creatures, lake monsters
+- conspiracy: Alternative history, ancient civilizations, cover-ups, secret societies
+- unresolved: Unsolved mysteries, disappearances, internet mysteries
+- weird_news: Bizarre news, odd events, strange discoveries
 
 No additional text, markdown, or explanation. Just the JSON object.`;
 
@@ -149,7 +158,7 @@ ${story.body || story.title || "No content available"}`;
       }
 
       // Validate and normalize
-      const validCategories = ["ufo", "paranormal", "unresolved", "weird_news"];
+      const validCategories = ["ufo", "paranormal", "true_crime", "cryptid", "conspiracy", "unresolved", "weird_news"];
       const validCredibility = ["low", "medium", "high"];
       const validTrendScore = ["hot", "warm", "cold"];
 
