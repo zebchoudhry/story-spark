@@ -481,6 +481,77 @@ Deno.serve(async (req) => {
     "https://www.youtube.com/feeds/videos.xml?channel_id=UCNUx9bQyEI0k6CQpo4TaNAw", // Real Stories
     "https://www.youtube.com/feeds/videos.xml?channel_id=UCaMpkNJMOHZONyFzkb2BjPw", // Free Documentary
     "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q", // Kurzgesagt
+    
+    // Additional UFO/Paranormal YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCy9aHxcb7dPTz8GDw0M6hRQ", // The Why Files
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCNxkSysoVNnxmzB7M1wYKHg", // Stuff They Don't Want You To Know
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCr6JcgOY00s-AZ6_FdeEEvg", // ASecretSub
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCc6dAH2vB3eqVMKPnQeL5pA", // Dark5
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCXJ1Vmx4l9I0vIz7Kb9fJyA", // Earthfiles
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCU7Ux3hWKu3s2kL66xGfM4g", // Top5s
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCLLmXP6aq-6TVU5Gz4cXwtw", // BE. BUSTA
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC6gYAiPi7lbIlmqSGDf4sUQ", // Thoughty2
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC8QnvnC8yJHMZ3gPW4P1tzQ", // Bizarre World
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCX6OQ3DkcsbYNE6H8uQQuVA", // MrBeast (occasional weird)
+    
+    // More True Crime YouTube Channels
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCr0vJw8t1C0d6ZPqILLuO0g", // True Crime Daily
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCaQ3knB1P3B5jqYnYfhGdZA", // COURT TV
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC1DGpYiEiqBrQtYXFbLhMVQ", // Bailey Sarian
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UC16niRr50-MSBwiO3YDb3RA", // Danelle Hallan
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCtMp-QzD4TqavcPmZWXpBjA", // Disturban
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCWy1U4W3ZsF3c6STGrQXkmQ", // Crime Watch Daily
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCgKRLXPH-k7kxcv51xmBwqg", // Rob Gavagan
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCb-mXwDehQf0pEcS0G3i5bA", // LORE
+    
+    // Conspiracy/Alternative History YouTube
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCjMjGN6PSKyqLNz9vmrYnXQ", // Bright Insight
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCBSMIoLs7f8vbVyrPfBQi1A", // UnchartedX
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCvQxz7cCNPAkZ87Lz9YQLDA", // World Unearthed
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCY_kc3T9-nP-ZFqvpXJ5pog", // Matrix Wisdom
+    
+    // ==================== NEWSPAPER RSS FEEDS ====================
+    
+    // UK Newspapers - Weird/Unexplained Sections
+    "https://www.dailymail.co.uk/sciencetech/index.rss",
+    "https://www.theguardian.com/world/rss",
+    "https://www.independent.co.uk/topic/unexplained-phenomena/rss",
+    "https://www.telegraph.co.uk/science/rss.xml",
+    
+    // US Newspapers - Science/Weird
+    "https://rss.nytimes.com/services/xml/rss/nyt/Science.xml",
+    "https://feeds.washingtonpost.com/rss/national",
+    "https://www.latimes.com/science/rss2.0.xml",
+    "https://www.usatoday.com/rss/news/nation/",
+    "https://www.chicagotribune.com/arcio/rss/category/news/",
+    "https://nypost.com/weird-news/feed/",
+    "https://www.bostonglobe.com/rss/feeds/metro",
+    
+    // International News - Science/Mysteries
+    "https://www.cbc.ca/cmlink/rss-canada",
+    "https://www.abc.net.au/news/feed/51120/rss.xml",
+    "https://www.smh.com.au/rss/world.xml",
+    "https://www.stuff.co.nz/rss",
+    "https://www.irishtimes.com/cmlink/news-1.1319192",
+    "https://www.scotsman.com/rss",
+    
+    // Wire Services - Breaking News
+    "https://feeds.reuters.com/reuters/scienceNews",
+    "https://feeds.reuters.com/Reuters/worldNews",
+    
+    // Alt News/Investigative
+    "https://www.vice.com/en/rss",
+    "https://theintercept.com/feed/?rss",
+    
+    // Local TV News (often cover weird local stories)
+    "https://www.fox5dc.com/rss/category/news",
+    "https://www.nbcchicago.com/news/weird/feed/",
+    "https://www.local10.com/arcio/rss/category/news/weird/",
+    
+    // Podcasts with RSS (additional)
+    "https://feeds.simplecast.com/dHoohVNH", // Last Podcast on the Left
+    "https://feeds.megaphone.fm/ADL9840290619", // And That's Why We Drink
+    "https://feeds.buzzsprout.com/862184.rss", // Dark History
   ];
 
   for (const feedUrl of rssFeeds) {
