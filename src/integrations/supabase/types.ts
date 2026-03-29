@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      discovered_sources: {
+        Row: {
+          added_to_sources: boolean
+          category: string
+          created_at: string
+          discovery_method: string
+          feed_title: string | null
+          genre: string
+          id: string
+          item_count: number | null
+          last_item_date: string | null
+          source_type: string
+          source_url: string
+        }
+        Insert: {
+          added_to_sources?: boolean
+          category: string
+          created_at?: string
+          discovery_method?: string
+          feed_title?: string | null
+          genre: string
+          id?: string
+          item_count?: number | null
+          last_item_date?: string | null
+          source_type?: string
+          source_url: string
+        }
+        Update: {
+          added_to_sources?: boolean
+          category?: string
+          created_at?: string
+          discovery_method?: string
+          feed_title?: string | null
+          genre?: string
+          id?: string
+          item_count?: number | null
+          last_item_date?: string | null
+          source_type?: string
+          source_url?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
