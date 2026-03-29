@@ -87,6 +87,7 @@ export type Database = {
           client_id: string | null
           created_at: string
           genre: string
+          genre_category: string | null
           id: string
           last_fetched_at: string | null
           source_type: string
@@ -98,6 +99,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string
           genre: string
+          genre_category?: string | null
           id?: string
           last_fetched_at?: string | null
           source_type: string
@@ -109,6 +111,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string
           genre?: string
+          genre_category?: string | null
           id?: string
           last_fetched_at?: string | null
           source_type?: string
@@ -160,6 +163,7 @@ export type Database = {
           category: Database["public"]["Enums"]["story_category"]
           created_at: string
           credibility: Database["public"]["Enums"]["credibility_level"]
+          genre_category: string | null
           id: string
           published_at: string | null
           raw_story_id: string | null
@@ -175,6 +179,7 @@ export type Database = {
           category: Database["public"]["Enums"]["story_category"]
           created_at?: string
           credibility?: Database["public"]["Enums"]["credibility_level"]
+          genre_category?: string | null
           id?: string
           published_at?: string | null
           raw_story_id?: string | null
@@ -190,6 +195,7 @@ export type Database = {
           category?: Database["public"]["Enums"]["story_category"]
           created_at?: string
           credibility?: Database["public"]["Enums"]["credibility_level"]
+          genre_category?: string | null
           id?: string
           published_at?: string | null
           raw_story_id?: string | null
