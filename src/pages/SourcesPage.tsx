@@ -81,9 +81,7 @@ export default function SourcesPage() {
   const handleDiscover = async () => {
     setDiscovering(true);
     try {
-      const { data, error } = await supabase.functions.invoke("discover-sources", {
-        headers: { "x-cron-secret": "trigger" },
-      });
+      const { data, error } = await supabase.functions.invoke("discover-sources");
       if (error) throw error;
       toast({
         title: "Discovery complete",

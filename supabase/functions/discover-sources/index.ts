@@ -65,11 +65,33 @@ Deno.serve(async (req) => {
 
   console.log("[discover-sources] Starting source discovery...");
 
-  // Verify secret
+  // Verify secret OR authenticated admin user
   const cronSecret = req.headers.get("x-cron-secret");
   const expectedSecret = Deno.env.get("INGEST_SECRET");
+  const cronAuth = cronSecret && cronSecret === expectedSecret;
 
-  if (!cronSecret || cronSecret !== expectedSecret) {
+  let userAuth = false;
+  if (!cronAuth) {
+    // Check if caller is an authenticated admin
+    const authHeader = req.headers.get("authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: claimsData, error: claimsErr } = await authClient.auth.getClaims(authHeader.replace("Bearer ", ""));
+      if (!claimsErr && claimsData?.claims?.sub) {
+        const userId = claimsData.claims.sub;
+        const serviceClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+        const { data: hasAdmin } = await serviceClient.rpc("has_role", { _user_id: userId, _role: "admin" });
+        if (hasAdmin) userAuth = true;
+      }
+    }
+  }
+
+  if (!cronAuth && !userAuth) {
     console.error("[discover-sources] Unauthorized");
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
