@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import StoryDetail from "./pages/StoryDetail";
 import ContentPack from "./pages/ContentPack";
 import BillingPage from "./pages/BillingPage";
+import SourcesPage from "./pages/SourcesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,11 @@ const App = () => (
             <Route path="/app/story/:id/pack" element={
               <ProtectedRoute>
                 <ContentPack />
+              </ProtectedRoute>
+            } />
+            <Route path="/app/sources" element={
+              <ProtectedRoute>
+                <SourcesPage />
               </ProtectedRoute>
             } />
             <Route path="/billing" element={

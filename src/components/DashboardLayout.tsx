@@ -10,7 +10,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  Bell
+  Bell,
+  Database
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +29,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Stories", path: "/app" },
+    { icon: Database, label: "Sources", path: "/app/sources" },
     { icon: CreditCard, label: "Billing", path: "/billing" },
   ];
 
