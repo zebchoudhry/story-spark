@@ -10,7 +10,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  Bell
+  Bell,
+  Database
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
