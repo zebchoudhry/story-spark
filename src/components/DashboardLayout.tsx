@@ -29,6 +29,7 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Stories", path: "/app" },
+    { icon: Database, label: "Sources", path: "/app/sources" },
     { icon: CreditCard, label: "Billing", path: "/billing" },
   ];
 

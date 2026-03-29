@@ -43,6 +43,11 @@ const App = () => (
                 <ContentPack />
               </ProtectedRoute>
             } />
+            <Route path="/app/sources" element={
+              <ProtectedRoute>
+                <SourcesPage />
+              </ProtectedRoute>
+            } />
             <Route path="/billing" element={
               <ProtectedRoute>
                 <BillingPage />
