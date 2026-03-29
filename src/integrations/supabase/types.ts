@@ -38,6 +38,42 @@ export type Database = {
         }
         Relationships: []
       }
+      sources: {
+        Row: {
+          active: boolean
+          category: string
+          client_id: string | null
+          created_at: string
+          genre: string
+          id: string
+          last_fetched_at: string | null
+          source_type: string
+          source_url: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          client_id?: string | null
+          created_at?: string
+          genre: string
+          id?: string
+          last_fetched_at?: string | null
+          source_type: string
+          source_url: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          client_id?: string | null
+          created_at?: string
+          genre?: string
+          id?: string
+          last_fetched_at?: string | null
+          source_type?: string
+          source_url?: string
+        }
+        Relationships: []
+      }
       stories_raw: {
         Row: {
           body: string | null
